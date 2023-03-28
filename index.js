@@ -8,8 +8,8 @@ const http = require('http').createServer(app);
 const Web3 = require('web3');
 const serverPort = 3001;
 
-const web3 = new Web3("http://3.138.67.27:4444");
-const web3S = new Web3("ws://3.138.67.27:4445/websocket");
+const web3 = new Web3("http://12.0.0.1:4444");
+const web3S = new Web3("ws://127.0.0.1:4445/websocket");
 const web3Iov = new Web3('https://public-node.rsk.co');
 
 http.listen(serverPort, () => {
