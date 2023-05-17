@@ -1,20 +1,19 @@
+
 /**
  * Sovryn node health check
 */
-
-const express = require('express');
+const express= require('express');
 const app = express();
 const http = require('http').createServer(app);
 const Web3 = require('web3');
 const serverPort = 3001;
+let web3;
+let web3S;
+let web3Iov;
+// wait for rsk node to start
+setTimeout(startListening, 20000);
 
-const web3 = new Web3("http://127.0.0.1:4444");
-const web3S = new Web3("ws://127.0.0.1:4445/websocket");
-const web3Iov = new Web3('https://public-node.rsk.co');
 
-http.listen(serverPort, () => {
-  console.log('listening on *:' + serverPort);
-});
 
 function sendAsyncRequest(web3, method, params) {
     return new Promise((resolve, reject) => {
@@ -45,17 +44,30 @@ async function getBlockNumber(web3) {
     }
 }
 
-app.get('/', async (req, res) => {
-  const b = await getBlockNumber(web3);
-  const s = await getBlockNumber(web3S);
-  const i = await getBlockNumber(web3Iov);
 
-  const result = new Date(Date.now()) + " processed blocks: rpc " + b + ", wss: " + s + "  iov: " + i;
-  console.log(result);
 
-  if (Math.abs(b - s) <= 3 && Math.abs(b - i) <= 3) {
-    return res.status(200).send(result);
-  } else {
+
+
+
+function startListening(){
+   web3 = new Web3("http://127.0.0.1:8545");
+   web3S = new Web3("ws://127.0.0.1:8545/websocket");
+   web3Iov = new Web3('https://public-node.rsk.co');
+
+   http.listen(serverPort, () => {
+       console.log('listening on *:'+serverPort);
+   });
+}
+app.get('/', async (req, res)=> {
+    const b = await web3.eth.getBlockNumber();
+    const s = await web3S.eth.getBlockNumber();
+    const i = await web3Iov.eth.getBlockNumber();
+    const x = await getBlockNumber(web3);
+
+    const result = new Date(Date.now())+ " processed blocks: rpc "+b+", wss: "+s+"  iov: "+i;
+    console.log(result);
+
+    if(Math.abs(b - s) <= 3 && Math.abs(b-i)<=3) return res.status(200).send(result);
+
     return res.status(503).send("not in sync - " + result);
-  }
 });
