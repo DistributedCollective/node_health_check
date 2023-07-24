@@ -52,7 +52,7 @@ async function getBlockNumber(web3) {
 function startListening(){
    web3 = new Web3("http://127.0.0.1:8545");
    web3S = new Web3("ws://127.0.0.1:8545/websocket");
-   web3Iov = new Web3('https://public-node.rsk.co');
+   web3Iov = new Web3('https://public-node.testnet.rsk.co');
 
    http.listen(serverPort, () => {
        console.log('listening on *:'+serverPort);
